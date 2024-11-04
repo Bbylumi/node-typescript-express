@@ -1,17 +1,15 @@
 import mongoose, { Schema, Document } from 'mongoose';
 
-interface Room extends Document {
-  roomNumber: number;
-  type: string; // e.g., 'single', 'double', 'suite'
-  price: number;
-  isAvailable: boolean;
+export interface IRoom extends Document {
+    name: string;
+    capacity: number;
+    amenities: string[];
 }
 
 const RoomSchema: Schema = new Schema({
-  roomNumber: { type: Number, required: true, unique: true },
-  type: { type: String, required: true },
-  price: { type: Number, required: true },
-  isAvailable: { type: Boolean, default: true }
+    name: { type: String, required: true },
+    capacity: { type: Number, required: true },
+    amenities: { type: [String], default: [] },
 });
 
-export default mongoose.model<Room>('Room', RoomSchema);
+export default mongoose.model<IRoom>('Room', RoomSchema);

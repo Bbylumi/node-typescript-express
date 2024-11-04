@@ -2,7 +2,7 @@
 import { Request, Response, NextFunction } from 'express';
 import User from '../models/user.model';
 
-// Create User
+// Create a new user
 export const createUser = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { name, email, password, role } = req.body;
@@ -10,11 +10,11 @@ export const createUser = async (req: Request, res: Response, next: NextFunction
     await newUser.save();
     res.status(201).json(newUser);
   } catch (error) {
-    next(error); // Forward error to centralized handler
+    next(error);
   }
 };
 
-// Get All Users
+// Get all users
 export const getUsers = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const users = await User.find();
@@ -24,29 +24,27 @@ export const getUsers = async (req: Request, res: Response, next: NextFunction) 
   }
 };
 
-// Update User
+// Update user by ID
 export const updateUser = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const updatedUser = await User.findByIdAndUpdate(req.params.id, req.body, { new: true });
     if (!updatedUser) {
-      res.status(404).json({ message: 'User not found' });
-    } else {
-      res.json(updatedUser);
+      return res.status(404).json({ message: 'User not found' });
     }
+    res.json(updatedUser);
   } catch (error) {
     next(error);
   }
 };
 
-// Delete User
+// Delete user by ID
 export const deleteUser = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const deletedUser = await User.findByIdAndDelete(req.params.id);
     if (!deletedUser) {
-      res.status(404).json({ message: 'User not found' });
-    } else {
-      res.status(204).send();
+      return res.status(404).json({ message: 'User not found' });
     }
+    res.status(204).send();
   } catch (error) {
     next(error);
   }
