@@ -12,57 +12,87 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.deleteCustomer = exports.updateCustomer = exports.getCustomers = exports.createCustomer = void 0;
-const customer_model_1 = __importDefault(require("../models/customer.model"));
-// Create a new customer
-const createCustomer = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    try {
-        const { name, email, phone, address } = req.body;
-        const newCustomer = new customer_model_1.default({ name, email, phone, address });
-        yield newCustomer.save();
-        res.status(201).json(newCustomer);
+const customer_service_1 = __importDefault(require("../services/customer.service"));
+class CustomerController {
+    createCustomer(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const customer = yield customer_service_1.default.createCustomer(req.body);
+                res.status(201).json(customer);
+            }
+            catch (error) {
+                if (error instanceof Error) {
+                    console.error(error.message);
+                    res.status(500).json({ message: 'Failed to create customer' });
+                }
+                else {
+                    console.error('An unknown error occurred');
+                    res.status(500).json({ message: 'Unknown error' });
+                }
+            }
+        });
     }
-    catch (error) {
-        next(error);
+    getCustomers(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const customers = yield customer_service_1.default.getAllCustomers();
+                res.json(customers);
+            }
+            catch (error) {
+                console.error('Failed to fetch customers');
+                res.status(500).json({ message: 'Failed to fetch customers' });
+            }
+        });
     }
-});
-exports.createCustomer = createCustomer;
-// Get all customers
-const getCustomers = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    try {
-        const customers = yield customer_model_1.default.find();
-        res.json(customers);
+    getCustomerById(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const customer = yield customer_service_1.default.getCustomerById(req.params.id);
+                if (customer) {
+                    res.json(customer);
+                }
+                else {
+                    res.status(404).json({ message: 'Customer not found' });
+                }
+            }
+            catch (error) {
+                console.error('Failed to fetch customer by ID');
+                res.status(500).json({ message: 'Failed to fetch customer' });
+            }
+        });
     }
-    catch (error) {
-        next(error);
+    updateCustomer(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const customer = yield customer_service_1.default.updateCustomer(req.params.id, req.body);
+                if (customer) {
+                    res.json(customer);
+                }
+                else {
+                    res.status(404).json({ message: 'Customer not found' });
+                }
+            }
+            catch (error) {
+                console.error('Failed to update customer');
+                res.status(500).json({ message: 'Failed to update customer' });
+            }
+        });
     }
-});
-exports.getCustomers = getCustomers;
-// Update customer by ID
-const updateCustomer = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    try {
-        const updatedCustomer = yield customer_model_1.default.findByIdAndUpdate(req.params.id, req.body, { new: true });
-        if (!updatedCustomer) {
-            return res.status(404).json({ message: 'Customer not found' });
-        }
-        res.json(updatedCustomer);
+    deleteCustomer(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const customer = yield customer_service_1.default.deleteCustomer(req.params.id);
+                if (customer) {
+                    res.json({ message: 'Customer deleted successfully' });
+                }
+                else {
+                    res.status(404).json({ message: 'Customer not found' });
+                }
+            }
+            catch (error) {
+                res.status(500).json({ message: 'Server error' });
+            }
+        });
     }
-    catch (error) {
-        next(error);
-    }
-});
-exports.updateCustomer = updateCustomer;
-// Delete customer by ID
-const deleteCustomer = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    try {
-        const deletedCustomer = yield customer_model_1.default.findByIdAndDelete(req.params.id);
-        if (!deletedCustomer) {
-            return res.status(404).json({ message: 'Customer not found' });
-        }
-        res.status(204).send();
-    }
-    catch (error) {
-        next(error);
-    }
-});
-exports.deleteCustomer = deleteCustomer;
+}
+exports.default = new CustomerController();

@@ -1,7 +1,8 @@
 // models/customer.model.ts
 import mongoose, { Schema, Document } from 'mongoose';
 
-interface Customer extends Document {
+ 
+export interface ICustomer extends Document {
   name: string;
   email: string;
   phone: string;
@@ -15,4 +16,5 @@ const CustomerSchema: Schema = new Schema({
   address: { type: String, required: true }
 });
 
-export default mongoose.model<Customer>('Customer', CustomerSchema);
+ 
+export default mongoose.model<ICustomer>('Customer', CustomerSchema);

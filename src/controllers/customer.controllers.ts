@@ -1,51 +1,73 @@
-// controllers/customer.controller.ts
-import { Request, Response, NextFunction } from 'express';
-import Customer from '../models/customer.model';
+ 
+import { Request, Response } from 'express';
+import CustomerService from '../services/customer.service';
 
-// Create a new customer
-export const createCustomer = async (req: Request, res: Response, next: NextFunction) => {
-  try {
-    const { name, email, phone, address } = req.body;
-    const newCustomer = new Customer({ name, email, phone, address });
-    await newCustomer.save();
-    res.status(201).json(newCustomer);
-  } catch (error) {
-    next(error);
-  }
-};
-
-// Get all customers
-export const getCustomers = async (req: Request, res: Response, next: NextFunction) => {
-  try {
-    const customers = await Customer.find();
-    res.json(customers);
-  } catch (error) {
-    next(error);
-  }
-};
-
-// Update customer by ID
-export const updateCustomer = async (req: Request, res: Response, next: NextFunction) => {
-  try {
-    const updatedCustomer = await Customer.findByIdAndUpdate(req.params.id, req.body, { new: true });
-    if (!updatedCustomer) {
-      return res.status(404).json({ message: 'Customer not found' });
+class CustomerController {
+    async createCustomer(req: Request, res: Response): Promise<void> {
+        try {
+            const customer = await CustomerService.createCustomer(req.body);
+            res.status(201).json(customer);
+        } catch (error) {
+            if (error instanceof Error) {
+                console.error(error.message);
+                res.status(500).json({ message: 'Failed to create customer' });
+            } else {
+                console.error('An unknown error occurred');
+                res.status(500).json({ message: 'Unknown error' });
+            }
+        }
     }
-    res.json(updatedCustomer);
-  } catch (error) {
-    next(error);
-  }
-};
 
-// Delete customer by ID
-export const deleteCustomer = async (req: Request, res: Response, next: NextFunction) => {
-  try {
-    const deletedCustomer = await Customer.findByIdAndDelete(req.params.id);
-    if (!deletedCustomer) {
-      return res.status(404).json({ message: 'Customer not found' });
+    async getCustomers(req: Request, res: Response): Promise<void> {
+        try {
+            const customers = await CustomerService.getAllCustomers();
+            res.json(customers);
+        } catch (error) {
+            console.error('Failed to fetch customers');
+            res.status(500).json({ message: 'Failed to fetch customers' });
+        }
     }
-    res.status(204).send();
-  } catch (error) {
-    next(error);
-  }
-};
+
+    async getCustomerById(req: Request, res: Response): Promise<void> {
+        try {
+            const customer = await CustomerService.getCustomerById(req.params.id);
+            if (customer) {
+                res.json(customer);
+            } else {
+                res.status(404).json({ message: 'Customer not found' });
+            }
+        } catch (error) {
+            console.error('Failed to fetch customer by ID');
+            res.status(500).json({ message: 'Failed to fetch customer' });
+        }
+    }
+
+    async updateCustomer(req: Request, res: Response): Promise<void> {
+        try {
+            const customer = await CustomerService.updateCustomer(req.params.id, req.body);
+            if (customer) {
+                res.json(customer);
+            } else {
+                res.status(404).json({ message: 'Customer not found' });
+            }
+        } catch (error) {
+            console.error('Failed to update customer');
+            res.status(500).json({ message: 'Failed to update customer' });
+        }
+    }
+
+    async deleteCustomer(req: Request, res: Response): Promise<void> {
+        try {
+            const customer = await CustomerService.deleteCustomer(req.params.id);
+            if (customer) {
+                res.json({ message: 'Customer deleted successfully' });
+            } else {
+                res.status(404).json({ message: 'Customer not found' });
+            }
+        } catch (error) {
+            res.status(500).json({ message: 'Server error' });
+        }
+    }
+}
+
+export default new CustomerController();

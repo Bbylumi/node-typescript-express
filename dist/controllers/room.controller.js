@@ -23,9 +23,7 @@ class RoomController {
             }
             catch (error) {
                 if (error instanceof Error) {
-                    console.error(error.message); // Access the message property safely
-                }
-                else {
+                    console.error(error.message);
                     console.error('An unknown error occurred');
                 }
             }

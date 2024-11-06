@@ -1,10 +1,14 @@
-// routes/customer.routes.ts
+// src/routes/customer.routes.ts
 import { Router } from 'express';
-import { createCustomer, getCustomers, updateCustomer, deleteCustomer } from '../controllers/customer.controllers';
+import CustomerController from '../controllers/customer.controllers';
 
 const router = Router();
 
-router.post('/', createCustomer);
-router.get('/', getCustomers);
+router.post('/', CustomerController.createCustomer);          
+router.get('/', CustomerController.getCustomers);          
+router.get('/:id', CustomerController.getCustomerById);     
+router.put('/:id', CustomerController.updateCustomer);       
+router.delete('/:id', CustomerController.deleteCustomer); 
+
 
 export default router;
