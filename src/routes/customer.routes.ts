@@ -1,8 +1,11 @@
 // src/routes/customer.routes.ts
 import { Router } from 'express';
-import CustomerController from '../controllers/customer.controllers';
+import CustomerController from '../controllers/customer.controllers'; 
+
+
 
 const router = Router();
+
 
 router.post('/', CustomerController.createCustomer);          
 router.get('/', CustomerController.getCustomers);          
